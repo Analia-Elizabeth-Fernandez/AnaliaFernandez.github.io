@@ -187,7 +187,7 @@ def opcion_uno(): # 1. Agregar de articulo
         
         separador = ("-" * 62)
         print(Fore.GREEN + separador)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{"Código":^10} {"Descripción":^10} {"Categoría":^10} {"Stock":^8} {"Unidad":^8}")
+        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'Código':^10}} {'Descripción':^10} {'Categoría':^10} {'Stock':^8} {'Unidad':^8}")
         print(Fore.BLUE + f"{articulo_ingreso.upper():^10} {descripcion_art_ingreso.upper():^10} {categoria_art_ingreso.upper():^10} {stock_nuevo_producto:^8} {unidad_de_medida:^8}\n")
         print(Fore.GREEN + separador)
         clear()
