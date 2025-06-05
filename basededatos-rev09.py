@@ -5,7 +5,7 @@ from colorama import Back, Fore, Style, init
 init(autoreset=True)
 import time
 
-url = "https://github.com/Analia-Elizabeth-Fernandez/AnaliaFernandez.github.io/raw/main/Base%20de%20datos%20.xlsx"
+url = "https://github.com/Analia-Elizabeth-Fernandez/AnaliaFernandez.github.io/blob/main/Base%20de%20datos%20.xlsx"
 try:
     datos = pd.read_excel(url, sheet_name='Hoja1', index_col=0)
     print("Datos cargados correctamente:")
