@@ -131,7 +131,7 @@ def opcion_uno(): # 1. Agregar de articulo
         print(Fore.GREEN + "Actualmente su producto tiene las siguientes características:")
         print(Fore.BLUE + separador)
         
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{"Código":^10} {"Descripción":^10} {"Categoría":^10} {"Stock":^8}")
+        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{'Código':^10} {'Descripción':^10} {'Categoría':^10} {'Stock':^8}")
         print(Fore.BLUE + f"{articulo_ingreso.upper():^10} {descripcion.upper():^10} {categoria.upper():^10} {stock_actual:^8}\n")
         cantidad_nuevo_stock = int(input(Fore.BLUE + "Indique la cantidad a actualizar: "))
         print()
