@@ -298,7 +298,7 @@ def opcion_cinco(): # 5. Eliminar artículo
         print(Fore.MAGENTA + "Actualmente su producto tiene las siguientes características: ")
         separador = (Fore.GREEN + "-" * 65)
         print(separador)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{"Código":^10} {"Descripción":^10} {"Categoría":^10} {"Stock":^8}")
+        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'Código':^10}} {'Descripción':^10} {'Categoría':^10} {'Stock':^8}")
         print(Fore.BLUE + f"{articulo_eliminar.upper():^10} {descripcion.upper():^10} {categoria.upper():^10} {stock_actual:^8}\n")
         time.sleep(2)
         print(Fore.YELLOW + "¿Está seguro que desea confirmar su operación?")
