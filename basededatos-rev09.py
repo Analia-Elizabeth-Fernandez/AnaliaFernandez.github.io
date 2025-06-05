@@ -5,6 +5,20 @@ from colorama import Back, Fore, Style, init
 init(autoreset=True)
 import time
 
+# URL del archivo Excel en GitHub
+url = "https://github.com/Analia-Elizabeth-Fernandez/AnaliaFernandez.github.io/raw/main/Base%20de%20datos%20.xlsx"
+
+# Intentar leer el archivo directamente desde la URL
+try:
+    datos = pd.read_excel(url, sheet_name='Hoja1', index_col=0)  # Asegúrate de que 'Hoja1' sea el nombre correcto de tu hoja
+    print("Datos cargados correctamente:")
+    print(datos.head())  # Muestra las primeras filas para verificar que los datos se leyeron correctamente
+except Exception as e:
+    print(f"Ocurrió un error al leer el archivo: {e}")
+
+# Aquí seguiría el resto del procesamiento de tus datos...
+
+
 def clear():
     if os.name == "nt":
         os.system("cls")
