@@ -232,7 +232,7 @@ def opcion_tres():  # 3. Buscar artículo por código o por palabra clave
         print(Fore.MAGENTA + "Su producto se encuentra en el inventario con las siguientes características: ")
         separador = (Fore.GREEN + "-" * 77)
         print(separador)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{"Código":^10} {"Descripción":^10} {"Categoría":^10} {"Stock":^8} {"Unidad":^8}")
+        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'Código':^10}} {'Descripción':^10} {'Categoría':^10} {'Stock':^8} {'Unidad':^8}")
         print(Fore.BLUE + f"{consulta.upper():^10} {descripcion.upper():^10} {categoria.upper():^10} {stock:^8} {unidad:^8}\n") 
         time.sleep(5)
         clear()
