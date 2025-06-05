@@ -4,7 +4,6 @@ from pandas import ExcelWriter
 from colorama import Back, Fore, Style, init
 init(autoreset=True)
 import time
-
 import requests
 
 url = "https://github.com/Analia-Elizabeth-Fernandez/AnaliaFernandez.github.io/raw/main/Base%20de%20datos%20.xlsx"
@@ -14,7 +13,6 @@ if response.status_code == 200:
     with open("Base de datos.xlsx", 'wb') as f:
         f.write(response.content)
     
-    # Luego intenta abrirlo con pandas
     try:
         datos = pd.read_excel("Base de datos.xlsx", sheet_name='Hoja1', index_col=0, engine='openpyxl')
         print("Datos cargados correctamente:")
@@ -23,10 +21,6 @@ if response.status_code == 200:
         print(f"Ocurrió un error al leer el archivo: {e}")
 else:
     print("No se pudo descargar el archivo.")
-
-
-
-
 
 def clear():
     if os.name == "nt":
@@ -41,7 +35,15 @@ logo = '''
 |  '--|  |  '--' |  |\  \|  `---|  |\  \|  |  | |  |    |  '--' |  |\  \|  | |  |  | `   |  |  \   /  |  `---|  '--. 
 `-----`--`------'`--' '--`------`--' '--`--`--' `--'    `------'`--' '--`--' `--`--'  `--`--'   `-'   `------`-----' 
 '''
-init
+
+# Función para obtener entradas, con soporte para modo producción (variables de entorno)
+def obtener_entrada(prompt, var_env):
+    if os.getenv("PRODUCTION") == "1":
+        valor = os.getenv(var_env)
+        print(Fore.BLUE + f"{prompt} {valor}")
+        return valor
+    else:
+        return input(Fore.BLUE + prompt)
 
 def menu():
     while True:   
@@ -55,8 +57,8 @@ def menu():
         print(Fore.CYAN +'5. Eliminar Artículo')
         print(Fore.CYAN +'6. Ver todos')
         print(Fore.CYAN +'7. Salir')
-        print( )
-        opcion = input(Fore.CYAN + 'Selecciona una opción: ')
+        print()
+        opcion = obtener_entrada('Selecciona una opción: ', 'OPCION_MENU')
         
         if opcion == "1":
             opcion_uno()
@@ -72,7 +74,7 @@ def menu():
             print()
             print(datos_con_encabezado_ok)
             time.sleep(15)
-            menu()
+            clear()
         elif opcion == "7":
             opcion_siete()
             break
@@ -80,34 +82,35 @@ def menu():
             print(Fore.RED + "Por favor, ingrese una opción válida.")
             time.sleep(3)
             clear()
-            return menu()
-
 
 lista_usuarios= ["PEPE"]
 lista_contrasenia= ["123"]
 
-def nuevo_usuario(): # Permite crear un usuario nuevo para acceder al sistema
+def nuevo_usuario():
     while True:
-        print( )
-        nuevo_usuario = input(Fore.BLUE + "Por favor, elija un nombre de usuario: ").upper()
+        print()
+        nuevo_usuario = obtener_entrada("Por favor, elija un nombre de usuario: ", "NUEVO_USUARIO").upper()
         if nuevo_usuario in lista_usuarios:
             print(Fore.RED + "Usuario no disponible. Por favor, elija otro usuario.")
+            if os.getenv("PRODUCTION") == "1":
+                break  # Evitar loop infinito en producción
         else:
-            nueva_contrasenia = input(Fore.BLUE + "Ingrese una contraseña para el nuevo usuario: ")
-            lista_usuarios.append(nuevo_usuario) # Agrega el usuario nuevo al sistema
-            lista_contrasenia.append(nueva_contrasenia) # Agrega el contrasenia nueva al sistema
+            nueva_contrasenia = obtener_entrada("Ingrese una contraseña para el nuevo usuario: ", "NUEVA_CONTRASENIA")
+            lista_usuarios.append(nuevo_usuario)
+            lista_contrasenia.append(nueva_contrasenia)
             print(Fore.GREEN + "Usuario creado con éxito.")
             time.sleep(2)
             return acceso_sistema()
+        if os.getenv("PRODUCTION") == "1":
+            break
 
-
-def usuario_existente(): # Inicia sesion con un usuario ya creado
-    usuario_existente = input("Por favor, elija un usuario: ").upper()
+def usuario_existente():
+    usuario_existente = obtener_entrada("Por favor, elija un usuario: ", "USUARIO").upper()
     if usuario_existente in lista_usuarios:
         indice = lista_usuarios.index(usuario_existente)
-        contrasenia = input("Ingrese su contraseña: ")
+        contrasenia = obtener_entrada("Ingrese su contraseña: ", "CONTRASENIA")
         
-        if contrasenia in lista_contrasenia[indice]: # Verifica la contraseña en el mismo índice
+        if contrasenia == lista_contrasenia[indice]:
             print(Fore.GREEN + "Acceso concedido.")
             clear()
             menu()
@@ -120,28 +123,26 @@ def usuario_existente(): # Inicia sesion con un usuario ya creado
         time.sleep(3)
         acceso_sistema()
 
-
 def acceso_sistema():
-        clear()
-        print(Style.BRIGHT + Fore.CYAN + logo)
-        print(Fore.BLUE + "-" * 30)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'BIENVENIDO':^30}}")
-        print(Fore.BLUE + "-" * 30)
-        ingreso_usuario = input(Fore.BLUE + "Ingrese [0] para iniciar sesión o [1] para crear una cuenta nueva: ")
-        clear()
-        if ingreso_usuario == "0":
-            usuario_existente()
-        elif ingreso_usuario == "1":
-            nuevo_usuario()
-        else:
-            print(Fore.RED + "Por favor, ingrese una opción válida.")
-            time.sleep(1)
+    clear()
+    print(Style.BRIGHT + Fore.CYAN + logo)
+    print(Fore.BLUE + "-" * 30)
+    print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'BIENVENIDO':^30}}")
+    print(Fore.BLUE + "-" * 30)
+    ingreso_usuario = obtener_entrada("Ingrese [0] para iniciar sesión o [1] para crear una cuenta nueva: ", "ACCION")
+    clear()
+    if ingreso_usuario == "0":
+        usuario_existente()
+    elif ingreso_usuario == "1":
+        nuevo_usuario()
+    else:
+        print(Fore.RED + "Por favor, ingrese una opción válida.")
+        time.sleep(1)
         clear()
         acceso_sistema()
 
-
-def opcion_uno(): # 1. Agregar de articulo
-    articulo_ingreso = input(Fore.CYAN + "Por favor, indique el código del producto a agregar: \n" ).strip().upper()
+def opcion_uno():
+    articulo_ingreso = obtener_entrada("Por favor, indique el código del producto a agregar: \n", "CODIGO_ARTICULO").strip().upper()
     
     if articulo_ingreso in datos.index:
         descripcion = datos.loc[articulo_ingreso, 'Descripcion']
@@ -156,11 +157,11 @@ def opcion_uno(): # 1. Agregar de articulo
         
         print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{'Código':^10} {'Descripción':^10} {'Categoría':^10} {'Stock':^8}")
         print(Fore.BLUE + f"{articulo_ingreso.upper():^10} {descripcion.upper():^10} {categoria.upper():^10} {stock_actual:^8}\n")
-        cantidad_nuevo_stock = int(input(Fore.BLUE + "Indique la cantidad a actualizar: "))
+        cantidad_nuevo_stock = int(obtener_entrada("Indique la cantidad a actualizar: ", "CANTIDAD_ACTUALIZAR"))
         print()
         print(Fore.YELLOW + "¿Está seguro que desea confirmar su operación?")
         print()
-        respuesta = input(Fore.YELLOW + "Escriba 'S' si desea confirmar la operación o 'N' si desea cancelar: \n").upper()
+        respuesta = obtener_entrada("Escriba 'S' si desea confirmar la operación o 'N' si desea cancelar: \n", "CONFIRMAR_OPERACION").upper()
         if respuesta == 'S':
             nuevo_stock = stock_actual + cantidad_nuevo_stock
             datos.loc[articulo_ingreso, 'Stock'] = nuevo_stock
@@ -169,24 +170,7 @@ def opcion_uno(): # 1. Agregar de articulo
             print(Fore.GREEN + f"Producto actualizado. Ahora tiene {nuevo_stock} unidades del producto {descripcion}.")
             time.sleep(5)
             clear()
-            while True:
-                opcion = menu()
-                if opcion == "1":
-                    opcion_uno()
-                elif opcion == "2":
-                    opcion_dos()
-                elif opcion == "3":
-                    opcion_tres()
-                elif opcion == "4":
-                    opcion_cuatro()
-                elif opcion == "5":
-                    opcion_cinco()
-                elif opcion == "6":
-                    print(datos_con_encabezado_ok)
-                    time.sleep(15)
-                elif opcion == "7":
-                    opcion_siete()
-                break
+            menu()
         else:
             print(Fore.RED + "¡Su operación fue cancelada con éxito!")
             time.sleep(3)
@@ -195,13 +179,13 @@ def opcion_uno(): # 1. Agregar de articulo
     else:
         print()
         print(Fore.MAGENTA + "Su producto es nuevo, por favor indique lo siguiente: \n")
-        descripcion_art_ingreso = input(Fore.BLUE + "Por favor, ingrese la descripción del nuevo producto: \n").strip().upper()
+        descripcion_art_ingreso = obtener_entrada("Por favor, ingrese la descripción del nuevo producto: \n", "DESCRIPCION_NUEVO").strip().upper()
         print()
-        categoria_art_ingreso = input(Fore.BLUE + "Por favor, ingrese la categoría del nuevo producto: \n").strip().upper()
+        categoria_art_ingreso = obtener_entrada("Por favor, ingrese la categoría del nuevo producto: \n", "CATEGORIA_NUEVO").strip().upper()
         print()
-        stock_nuevo_producto = int(input(Fore.BLUE + "Indique la cantidad del nuevo producto: \n"))
+        stock_nuevo_producto = int(obtener_entrada("Indique la cantidad del nuevo producto: \n", "STOCK_NUEVO"))
         print()
-        unidad_de_medida = input(Fore.BLUE + "Por favor, ingrese la unidad de medida del nuevo producto: \n").strip().upper()
+        unidad_de_medida = obtener_entrada("Por favor, ingrese la unidad de medida del nuevo producto: \n", "UNIDAD_MEDIDA_NUEVO").strip().upper()
         print()
         datos.loc[articulo_ingreso] = [descripcion_art_ingreso, categoria_art_ingreso, stock_nuevo_producto, unidad_de_medida]
         guardar_datos_en_excel()
@@ -210,15 +194,14 @@ def opcion_uno(): # 1. Agregar de articulo
         
         separador = ("-" * 62)
         print(Fore.GREEN + separador)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'Código':^10}} {'Descripción':^10} {'Categoría':^10} {'Stock':^8} {'Unidad':^8}")
+        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{'Código':^10} {'Descripción':^10} {'Categoría':^10} {'Stock':^8} {'Unidad':^8}")
         print(Fore.BLUE + f"{articulo_ingreso.upper():^10} {descripcion_art_ingreso.upper():^10} {categoria_art_ingreso.upper():^10} {stock_nuevo_producto:^8} {unidad_de_medida:^8}\n")
         print(Fore.GREEN + separador)
         clear()
         menu()
 
-
-def opcion_dos(): # 2. Ver Stock
-    articulo_stock = input(Fore.BLUE + "Indique el código del artículo que desea consultar stock: \n").strip().upper()
+def opcion_dos():
+    articulo_stock = obtener_entrada("Indique el código del artículo que desea consultar stock: \n", "CODIGO_CONSULTA").strip().upper()
     
     if articulo_stock in datos.index:
         stock = datos.loc[articulo_stock, 'Stock']
@@ -231,152 +214,90 @@ def opcion_dos(): # 2. Ver Stock
         clear()
         menu()
     else:
-        print(Fore.RED + f"El artículo {articulo_stock} no se encuentra en el inventario")
-        respuesta = input(Fore.YELLOW + "¿desea agregar el articulo? Escriba 'S' para confirmar o 'N' para cancelar:\n ").strip().upper()
-        if respuesta == "S":
-                opcion_uno() 
-        else:
-            print(Fore.RED + "¡Su operación fue cancelada con éxito!")
+        print(Fore.RED + "No se encontró el producto.")
         time.sleep(3)
         clear()
         menu()
 
-
-def opcion_tres():  # 3. Buscar artículo por código o por palabra clave
-    consulta = input("Indique el código del artículo o una palabra clave para buscar en la descripción: \n").strip().upper()
-    
-    # Verificar si la consulta es un código de artículo
-    if consulta in datos.index:
-        descripcion = datos.loc[consulta, 'Descripcion']
-        categoria = datos.loc[consulta, 'Categoria']
-        stock = datos.loc[consulta, 'Stock']
-        unidad = datos.loc[consulta, 'Unidad de medida']
-        print()
-        print(Fore.MAGENTA + "Su producto se encuentra en el inventario con las siguientes características: ")
-        separador = (Fore.GREEN + "-" * 77)
-        print(separador)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'Código':^10}} {'Descripción':^10} {'Categoría':^10} {'Stock':^8} {'Unidad':^8}")
-        print(Fore.BLUE + f"{consulta.upper():^10} {descripcion.upper():^10} {categoria.upper():^10} {stock:^8} {unidad:^8}\n") 
+def opcion_tres():
+    articulo_buscar = obtener_entrada("Ingrese el código del artículo a buscar: \n", "CODIGO_BUSCAR").strip().upper()
+    if articulo_buscar in datos.index:
+        descripcion = datos.loc[articulo_buscar, 'Descripcion']
+        categoria = datos.loc[articulo_buscar, 'Categoria']
+        stock = datos.loc[articulo_buscar, 'Stock']
+        unidad = datos.loc[articulo_buscar, 'Unidad']
+        separador = ("-" * 65)
+        print(Fore.GREEN + separador)
+        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{'Código':^10} {'Descripción':^15} {'Categoría':^15} {'Stock':^8} {'Unidad':^8}")
+        print(Fore.BLUE + f"{articulo_buscar:^10} {descripcion:^15} {categoria:^15} {stock:^8} {unidad:^8}")
+        print(Fore.GREEN + separador)
         time.sleep(5)
         clear()
         menu()
     else:
-        # Si no es un código de artículo, buscar por palabra clave en la descripción
-        encontrados = datos[datos['Descripcion'].str.upper().str.contains(consulta)]
-        
-        if not encontrados.empty:
-            print(Fore.MAGENTA + "Se encontraron los siguientes artículos que contienen la palabra en la descripción:")
-            print(encontrados)
-            time.sleep(8)
-            clear()
-            menu()
-        else:
-            print(Fore.RED + f"No se encontraron artículos que coincidan con '{consulta}' en el código o la descripción.")
-            time.sleep(3)
-            clear()
-        menu()
-
-
-def opcion_cuatro(): # 4. Salida de Stock
-    articulo_salida = input(Fore.BLUE + "Por favor, indique el código del artículo para realizar una salida: \n").strip().upper()
-    if articulo_salida in datos.index:
-        stock_actual = int(datos.loc[articulo_salida, 'Stock'])
-        cantidad_salida = int(input(Fore.BLUE + "Indique la cantidad a egresar: \n"))   
-        if stock_actual < cantidad_salida:
-            print(Fore.RED + f"Stock insuficiente. Stock actual: {stock_actual}\n")
-            time.sleep(5)
-            clear()
-            menu()
-        else:
-            print(f"Actualmente tiene en stock {stock_actual} unidades del artículo {articulo_salida}."+ Fore.YELLOW +"¿Está seguro que desea confirmar su operación?")
-            respuesta = input(Fore.YELLOW + "Escriba 'S' si desea confirmar la operación o 'N' si desea cancelar: \n").upper()
-            if respuesta == 'S':
-                nuevo_stock = stock_actual - cantidad_salida
-                datos.loc[articulo_salida, 'Stock'] = nuevo_stock
-                guardar_datos_en_excel()
-                print(Fore.GREEN + f"Operación realizada correctamente. Nuevo stock del artículo {articulo_salida}: {nuevo_stock}")
-                time.sleep(5)
-                clear()
-                menu()
-            else:
-                print(Fore.RED + "¡Su operación fue cancelada con éxito!")
-                time.sleep(3)
-                clear()
-                menu()
-    else:
-        print(Fore.RED + f"El artículo {articulo_salida} no se encuentra en el inventario.")
+        print(Fore.RED + "Producto no encontrado.")
         time.sleep(3)
         clear()
         menu()
 
-
-def opcion_cinco(): # 5. Eliminar artículo
-    articulo_eliminar = input(Fore.BLUE + "Por favor, ingrese el código del artículo que desea eliminar: \n").strip().upper()
-    
-    if articulo_eliminar in datos.index:
-        descripcion = datos.loc[articulo_eliminar, 'Descripcion']
-        categoria = datos.loc[articulo_eliminar, 'Categoria']
-        stock_actual = datos.loc[articulo_eliminar, 'Stock']
-        print()
-        print(Fore.MAGENTA + "Actualmente su producto tiene las siguientes características: ")
-        separador = (Fore.GREEN + "-" * 65)
-        print(separador)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'Código':^10}} {'Descripción':^10} {'Categoría':^10} {'Stock':^8}")
-        print(Fore.BLUE + f"{articulo_eliminar.upper():^10} {descripcion.upper():^10} {categoria.upper():^10} {stock_actual:^8}\n")
-        time.sleep(2)
-        print(Fore.YELLOW + "¿Está seguro que desea confirmar su operación?")
-        respuesta = input(Fore.BLUE + "Escriba 'S' si desea confirmar la operación o 'N' si desea cancelar: \n").upper()
-        if respuesta == 'S':
-            datos.drop(index=articulo_eliminar, inplace=True)
+def opcion_cuatro():
+    articulo_salida = obtener_entrada("Por favor, indique el código del producto para salida de stock: \n", "CODIGO_SALIDA").strip().upper()
+    if articulo_salida in datos.index:
+        descripcion = datos.loc[articulo_salida, 'Descripcion']
+        stock_actual = datos.loc[articulo_salida, 'Stock']
+        print(f"Stock actual del producto {descripcion} ({articulo_salida}): {stock_actual}")
+        cantidad_salida = int(obtener_entrada("Ingrese la cantidad que desea sacar: ", "CANTIDAD_SALIDA"))
+        if cantidad_salida <= stock_actual:
+            nuevo_stock = stock_actual - cantidad_salida
+            datos.loc[articulo_salida, 'Stock'] = nuevo_stock
             guardar_datos_en_excel()
-            print(Fore.GREEN + f"Operación realizada correctamente. Se eliminó el producto {descripcion}.")
+            print(Fore.GREEN + f"Salida de stock realizada. Nuevo stock: {nuevo_stock}")
             time.sleep(4)
             clear()
             menu()
         else:
-            print(Fore.RED + "¡Su operación fue cancelada con éxito!")
+            print(Fore.RED + "No hay suficiente stock para realizar la salida.")
             time.sleep(3)
             clear()
             menu()
     else:
-        print(Fore.RED + f"El artículo {articulo_eliminar} no se encuentra en el inventario.")
+        print(Fore.RED + "Producto no encontrado.")
         time.sleep(3)
         clear()
         menu()
 
-
-def opcion_siete(): # 7. Salir
-    respuesta = input(Fore.YELLOW + "¿Está seguro que desea salir del sistema? Escriba 'S' para confirmar o 'N' para cancelar: \n").upper()
-    if respuesta == "S":
-        print(Fore.GREEN + "Saliendo del sistema. ¡Gracias por utilizar nuestro programa!")
+def opcion_cinco():
+    articulo_eliminar = obtener_entrada("Ingrese el código del artículo que desea eliminar: \n", "CODIGO_ELIMINAR").strip().upper()
+    if articulo_eliminar in datos.index:
+        datos.drop(articulo_eliminar, inplace=True)
+        guardar_datos_en_excel()
+        print(Fore.GREEN + "Artículo eliminado exitosamente.")
+        time.sleep(4)
+        clear()
+        menu()
+    else:
+        print(Fore.RED + "Producto no encontrado.")
         time.sleep(3)
         clear()
-        acceso_sistema()
-    else:
-        print(Fore.RED + "Operación cancelada. Continúa en sesión.")
-        time.sleep(2)
-        clear()
-        menu() # fix
+        menu()
 
+def opcion_siete():
+    clear()
+    print(Fore.YELLOW + "¡Gracias por usar el sistema de inventario!")
+    time.sleep(2)
+    clear()
 
 def guardar_datos_en_excel():
     try:
-        with ExcelWriter(ruta_excel, engine='openpyxl', mode='w') as writer:
-            datos.to_excel(writer, sheet_name='Hoja1', index=True)
-        print(Fore.GREEN + "Datos guardados correctamente en el archivo Excel. \n")
+        with ExcelWriter("Base de datos.xlsx") as writer:
+            datos.to_excel(writer, sheet_name='Hoja1')
     except Exception as e:
-        print(Fore.RED + f"Error al guardar los datos en el archivo Excel: {e}")
+        print(Fore.RED + f"Error al guardar el archivo Excel: {e}")
 
+# Arreglar visualización con encabezados para mostrar siempre
+datos_con_encabezado_ok = datos.copy()
+datos_con_encabezado_ok.index.name = 'Código'
 
-# Especifica la ruta del archivo Excel
-ruta_excel = "Base de datos.xlsx"
-
-# Lee el archivo Excel y carga los datos en un DataFrame de pandas
-datos = pd.read_excel(ruta_excel, sheet_name='Hoja1', index_col=0)
-
-# Lee el archivo Excel con el encabezado modificado y carga los datos en un DataFrame de pandas
-datos_con_encabezado_ok = pd.read_excel(ruta_excel, sheet_name='Hoja1', index_col=0, header=[0,1])
-
-
-# Llamada al sistema de acceso
-acceso_sistema()
+# Inicia el programa
+if __name__ == "__main__":
+    acceso_sistema()
