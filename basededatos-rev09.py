@@ -5,13 +5,25 @@ from colorama import Back, Fore, Style, init
 init(autoreset=True)
 import time
 
-url = "https://github.com/Analia-Elizabeth-Fernandez/AnaliaFernandez.github.io/blob/main/Base%20de%20datos%20.xlsx"
-try:
-    datos = pd.read_excel(url, sheet_name='Hoja1', index_col=0, engine='openpyxl')
-    print("Datos cargados correctamente:")
-    print(datos.head())  # Verificar que los datos se han cargado correctamente
-except Exception as e:
-    print(f"Ocurrió un error al leer el archivo: {e}")
+import requests
+
+url = "https://github.com/Analia-Elizabeth-Fernandez/AnaliaFernandez.github.io/raw/main/Base%20de%20datos%20.xlsx"
+response = requests.get(url)
+
+if response.status_code == 200:
+    with open("Base de datos.xlsx", 'wb') as f:
+        f.write(response.content)
+    
+    # Luego intenta abrirlo con pandas
+    try:
+        datos = pd.read_excel("Base de datos.xlsx", sheet_name='Hoja1', index_col=0, engine='openpyxl')
+        print("Datos cargados correctamente:")
+        print(datos.head())
+    except Exception as e:
+        print(f"Ocurrió un error al leer el archivo: {e}")
+else:
+    print("No se pudo descargar el archivo.")
+
 
 
 
