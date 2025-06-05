@@ -102,7 +102,7 @@ def acceso_sistema():
         clear()
         print(Style.BRIGHT + Fore.CYAN + logo)
         print(Fore.BLUE + "-" * 30)
-        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{"BIENVENIDO":^30}")
+        print(Back.LIGHTGREEN_EX + Fore.BLUE + Style.BRIGHT + f"{{'BIENVENIDO':^30}}")
         print(Fore.BLUE + "-" * 30)
         ingreso_usuario = input(Fore.BLUE + "Ingrese [0] para iniciar sesión o [1] para crear una cuenta nueva: ")
         clear()
