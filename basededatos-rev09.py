@@ -7,11 +7,12 @@ import time
 
 url = "https://github.com/Analia-Elizabeth-Fernandez/AnaliaFernandez.github.io/blob/main/Base%20de%20datos%20.xlsx"
 try:
-    datos = pd.read_excel(url, sheet_name='Hoja1', index_col=0)
+    datos = pd.read_excel(url, sheet_name='Hoja1', index_col=0, engine='openpyxl')
     print("Datos cargados correctamente:")
-    print(datos.head())  # Muestra las primeras filas para verificar
+    print(datos.head())  # Verificar que los datos se han cargado correctamente
 except Exception as e:
     print(f"Ocurrió un error al leer el archivo: {e}")
+
 
 
 
