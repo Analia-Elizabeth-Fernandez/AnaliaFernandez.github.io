@@ -369,7 +369,7 @@ def guardar_datos_en_excel():
 
 
 # Especifica la ruta del archivo Excel
-ruta_excel = "Base de datos.xlsx"'
+ruta_excel = "Base de datos.xlsx"
 
 # Lee el archivo Excel y carga los datos en un DataFrame de pandas
 datos = pd.read_excel(ruta_excel, sheet_name='Hoja1', index_col=0)
